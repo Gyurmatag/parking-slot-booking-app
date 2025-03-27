@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { ParkingSlot } from "@/components/parking-slot"
 import { ParkingSlotInfo } from "@/components/parking-slot-info"
 import { getParkingSlots, getAvailableSlots, type ParkingSlot as ParkingSlotType } from "@/app/actions/parking-actions"
@@ -31,7 +31,7 @@ export default function ParkingLot() {
   }
 
   // Function to load filtered parking slots
-  const loadFilteredParkingSlots = async () => {
+  const loadFilteredParkingSlots = useCallback(async () => {
     if (!date) return
 
     try {
@@ -76,7 +76,7 @@ export default function ParkingLot() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [date, startTime, duration, showHandicap, showElectric])
 
   // Load parking slots on initial render
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function ParkingLot() {
     if (date) {
       loadFilteredParkingSlots()
     }
-  }, [date, startTime, duration, showHandicap, showElectric])
+  }, [date, startTime, duration, showHandicap, showElectric, loadFilteredParkingSlots])
 
   const handleSlotClick = (slot: ParkingSlotType) => {
     if (slot.status !== "unavailable") {

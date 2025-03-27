@@ -13,11 +13,11 @@ export type User = {
 export const getCurrentUser = async (): Promise<User | null> => {
   // For demo purposes, we'll create a mock user if it doesn't exist
   try {
-    let user = await executeQuery("SELECT * FROM users WHERE email = $1", ["demo@example.com"])
+    let user = await executeQuery<User>("SELECT * FROM users WHERE email = $1", ["demo@example.com"])
 
     if (!user || user.length === 0) {
       // Create a demo user
-      user = await executeQuery(
+      user = await executeQuery<User>(
         `
         INSERT INTO users (email, name, password_hash)
         VALUES ($1, $2, $3)
@@ -35,10 +35,10 @@ export const getCurrentUser = async (): Promise<User | null> => {
 }
 
 // Mock login function
-export const login = async (email: string, password: string): Promise<User | null> => {
+export const login = async (email: string): Promise<User | null> => {
   try {
     // In a real app, you would verify the password hash
-    const user = await executeQuery("SELECT id, email, name FROM users WHERE email = $1", [email])
+    const user = await executeQuery<User>("SELECT id, email, name FROM users WHERE email = $1", [email])
     return user.length > 0 ? user[0] : null
   } catch (error) {
     console.error("Error logging in:", error)
@@ -47,10 +47,10 @@ export const login = async (email: string, password: string): Promise<User | nul
 }
 
 // Mock register function
-export const register = async (email: string, name: string, password: string): Promise<User | null> => {
+export const register = async (email: string, name: string): Promise<User | null> => {
   try {
     // In a real app, you would hash the password
-    const user = await executeQuery(
+    const user = await executeQuery<User>(
       `
       INSERT INTO users (email, name, password_hash)
       VALUES ($1, $2, $3)

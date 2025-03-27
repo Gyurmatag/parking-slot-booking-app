@@ -5,8 +5,13 @@ import { drizzle } from "drizzle-orm/neon-http"
 export const sql = neon(process.env.DATABASE_URL!)
 export const db = drizzle(sql)
 
+type DatabaseValue = string | number | boolean | Date | null
+
 // Helper function to execute raw SQL queries with proper parameter handling
-export async function executeQuery(queryText: string, params: any[] = []) {
+export async function executeQuery<T = Record<string, DatabaseValue>>(
+  queryText: string,
+  params: (string | number | boolean | Date | null)[] = []
+): Promise<T[]> {
   try {
     // Convert the conventional query to a tagged template query
     // This builds a query string with the correct parameter placeholders
@@ -14,7 +19,8 @@ export async function executeQuery(queryText: string, params: any[] = []) {
     const values = [...params]
 
     // Use sql.query for parameterized queries
-    return await sql.query(query, values)
+    const result = await sql.query(query, values)
+    return result as T[]
   } catch (error) {
     console.error("Database query error:", error)
     throw error

@@ -46,7 +46,7 @@ export default async function MyBookingsPage() {
       {bookings.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <p>You don't have any bookings yet.</p>
+            <p>You don&apos;t have any bookings yet.</p>
             <Link href="/">
               <Button className="mt-4">Book a Parking Slot</Button>
             </Link>

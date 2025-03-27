@@ -14,11 +14,8 @@ export async function clearAllBookings() {
     // Revalidate paths to ensure UI updates
     revalidatePath("/")
     revalidatePath("/my-bookings")
-
-    return { success: true, message: "All bookings have been cleared successfully" }
   } catch (error) {
     console.error("Error clearing bookings:", error)
-    return { success: false, message: `Error: ${error}` }
   }
 }
 

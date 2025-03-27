@@ -6,9 +6,11 @@ import { revalidatePath } from "next/cache"
 export async function seedParkingData() {
   try {
     // Check if data already exists
-    const sectionsCount = await executeQuery("SELECT COUNT(*) FROM parking_sections")
-    if (sectionsCount[0].count > 0) {
-      return { success: true, message: "Data already seeded" }
+    const sectionsCount = await executeQuery<{ count: string }>("SELECT COUNT(*) as count FROM parking_sections")
+    if (Number(sectionsCount[0].count) > 0) {
+      // Data already exists, just revalidate the path
+      revalidatePath("/")
+      return
     }
 
     // Create parking sections
@@ -69,10 +71,8 @@ export async function seedParkingData() {
     }
 
     revalidatePath("/")
-    return { success: true, message: "Database seeded successfully" }
   } catch (error) {
     console.error("Error seeding data:", error)
-    return { success: false, message: `Error: ${error}` }
   }
 }
 

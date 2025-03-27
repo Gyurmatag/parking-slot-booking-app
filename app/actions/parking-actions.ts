@@ -30,13 +30,13 @@ export type Booking = {
 
 // Get all parking sections
 export async function getParkingSections(): Promise<ParkingSection[]> {
-  const sections = await executeQuery("SELECT * FROM parking_sections ORDER BY name")
+  const sections = await executeQuery<ParkingSection>("SELECT * FROM parking_sections ORDER BY name")
   return sections
 }
 
 // Get all parking slots with section info
 export async function getParkingSlots(): Promise<(ParkingSlot & { section_name: string })[]> {
-  const slots = await executeQuery(`
+  const slots = await executeQuery<ParkingSlot & { section_name: string }>(`
     SELECT ps.*, pse.name as section_name 
     FROM parking_slots ps
     JOIN parking_sections pse ON ps.section_id = pse.id
@@ -50,7 +50,7 @@ export async function getAvailableSlots(date: string, startTime: string, duratio
   const startDateTime = new Date(`${date}T${startTime}`)
   const endDateTime = new Date(startDateTime.getTime() + duration * 60 * 60 * 1000)
 
-  const slots = await executeQuery(
+  const slots = await executeQuery<ParkingSlot>(
     `
     SELECT ps.* FROM parking_slots ps
     WHERE ps.status = 'available'
@@ -80,7 +80,7 @@ export async function bookParkingSlot(
 ): Promise<Booking | null> {
   try {
     // Check if slot is available
-    const slot = await executeQuery("SELECT * FROM parking_slots WHERE id = $1", [slotId])
+    const slot = await executeQuery<ParkingSlot>("SELECT * FROM parking_slots WHERE id = $1", [slotId])
 
     if (!slot || slot.length === 0 || slot[0].status !== "available") {
       throw new Error("Parking slot is not available")
@@ -91,7 +91,7 @@ export async function bookParkingSlot(
     const totalPrice = hours * slot[0].price_per_hour
 
     // Create booking
-    const booking = await executeQuery(
+    const booking = await executeQuery<Booking>(
       `
       INSERT INTO bookings (user_id, slot_id, start_time, end_time, status, total_price)
       VALUES ($1, $2, $3, $4, 'confirmed', $5)
@@ -118,7 +118,7 @@ export async function bookParkingSlot(
 export async function getUserBookings(
   userId: number,
 ): Promise<(Booking & { slot_number: string; section_name: string })[]> {
-  const bookings = await executeQuery(
+  const bookings = await executeQuery<Booking & { slot_number: string; section_name: string }>(
     `
     SELECT b.*, ps.slot_number, pse.name as section_name
     FROM bookings b
@@ -136,7 +136,7 @@ export async function getUserBookings(
 // Cancel booking
 export async function cancelBooking(bookingId: number): Promise<boolean> {
   try {
-    const booking = await executeQuery("SELECT * FROM bookings WHERE id = $1", [bookingId])
+    const booking = await executeQuery<Booking>("SELECT * FROM bookings WHERE id = $1", [bookingId])
 
     if (!booking || booking.length === 0) {
       return false

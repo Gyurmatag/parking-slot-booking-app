@@ -10,7 +10,7 @@ export default function Home() {
     <FilterProvider>
       <main className="container mx-auto py-8 px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold">Parking Slot Booking</h1>
+          <h1 className="text-3xl font-bold">Parking Slot Booking</h1>
           <div className="flex gap-2">
             <form action={seedParkingData}>
               <Button type="submit" variant="outline" size="sm">
